@@ -1,0 +1,29 @@
+{
+    "seed": 42,
+
+    "wandb": {
+        "wandb_project_name": "nlp-klue",
+        "wandb_username": "gypsi12"
+    },
+    
+    "arch": {
+        "model_name": "klue/bert-base",
+        "selected_model": "Model",
+        "model_detail": "v"
+    },
+
+    "trainer": {
+        "batch_size": 32,
+        "infer_batch_size": 32,
+        "max_epoch": 1,
+        "shuffle": true,
+        "learning_rate": 1e-5
+    },
+
+    "path": {
+        "train_path": "./dataset/test_train.csv",
+        "dev_path": "./dataset/test_dev.csv",
+        "test_path": "./dataset/test_dev.csv",
+        "predict_path": "./dataset/test.csv"}
+
+}
