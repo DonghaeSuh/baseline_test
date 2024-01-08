@@ -57,7 +57,7 @@ def main(config: Dict):
     parser.add_argument('--predict_path', default=config['path']['predict_path'], type=str)
     args = parser.parse_args()
 
-    wandb_logger = WandbLogger(project=config['wandb']['wandb_project_name'], entity=config['wandb']['wandb_username']) # config로 설정 관리
+    wandb_logger = WandbLogger(name=config['wandb']['wandb_run_name'], project=config['wandb']['wandb_project_name'], entity=config['wandb']['wandb_entity_name']) # config로 설정 관리
 
     # dataloader와 model을 생성합니다.
     dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,

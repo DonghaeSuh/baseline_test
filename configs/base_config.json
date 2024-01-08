@@ -2,8 +2,9 @@
     "seed": 42,
 
     "wandb": {
-        "wandb_project_name": "nlp-klue",
-        "wandb_username": "gypsi12"
+        "wandb_run_name" : "first_run",
+        "wandb_project_name": "your_project",
+        "wandb_entity_name": "be-our-friend"        
     },
     
     "arch": {
@@ -21,9 +22,9 @@
     },
 
     "path": {
-        "train_path": "./dataset/test_train.csv",
-        "dev_path": "./dataset/test_dev.csv",
-        "test_path": "./dataset/test_dev.csv",
+        "train_path": "./dataset/train.csv",
+        "dev_path": "./dataset/train.csv",
+        "test_path": "./dataset/train.csv",
         "predict_path": "./dataset/test.csv"}
 
 }
