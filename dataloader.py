@@ -4,8 +4,10 @@ import pandas as pd
 import numpy as np
 import torch
 from tqdm.auto import tqdm
+import ast
 
 import transformers
+from transformers import AutoTokenizer, AutoConfig
 import pytorch_lightning as pl
 
 
@@ -41,30 +43,28 @@ class Dataloader(pl.LightningDataModule):
         self.test_dataset = None
         self.predict_dataset = None
 
-        self.tokenizer = transformers.AutoTokenizer.from_pretrained(model_name, max_length=256)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=256)
 
-    def load_data(self, dataset):
+    def load_data(self, data):
         """ 처음 불러온 csv 파일을 원하는 형태의 DataFrame으로 변경 시켜줍니다."""
-        subject_entity = []
-        object_entity = []
-        for i,j in zip(dataset['subject_entity'], dataset['object_entity']):
-          i = i[1:-1].split(',')[0].split(':')[1]
-          j = j[1:-1].split(',')[0].split(':')[1]
+        # remain original dataset as-is
+        out_dataset = data.copy()
+        # {'word': '비틀즈', 'start_idx': 24, 'end_idx': 26, 'type': 'ORG'} -> '비틀즈'
+        out_dataset['subject_entity'] = out_dataset['subject_entity'].apply(lambda x: ast.literal_eval(x)) # turn string formatted like dict into real dict
+        out_dataset['object_entity'] = out_dataset['object_entity'].apply(lambda x: ast.literal_eval(x))
 
-          subject_entity.append(i)
-          object_entity.append(j)
-        out_dataset = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'],'subject_entity':subject_entity,'object_entity':object_entity,'label':dataset['label'],})
+        # Entity special token 의 종류를 다양하게 시도해 볼수 있습니다. 
+        out_dataset['subject_entity'] = out_dataset['subject_entity'].apply(lambda x: x['word'])
+        out_dataset['object_entity'] = out_dataset['object_entity'].apply(lambda x: x['word'])
+
         return out_dataset
 
-    def tokenizing(self,dataset):
+    def tokenizing(self, dataset):
         """ tokenizer에 따라 sentence를 tokenizing 합니다."""
-        concat_entity = []
+        concat_entity = (dataset['subject_entity'] + '[SEP]' + dataset['object_entity']).values.tolist()
 
-        for e01, e02 in zip(dataset['subject_entity'], dataset['object_entity']):
-          temp = ''
-          temp = e01 + '[SEP]' + e02
-          concat_entity.append(temp)
-
+        # [CLS]concat_entity[SEP]sentence[SEP]
+        # [CLS]비틀즈[SEP]조지 해리슨[SEP]〈Something〉는 조지 해리슨이 쓰고 비틀즈가 1969년 앨범 《Abbey Road》에 담은 노래다.[SEP]
         tokenized_sentences = self.tokenizer(
             concat_entity,
             list(dataset['sentence']),
@@ -73,16 +73,14 @@ class Dataloader(pl.LightningDataModule):
             truncation=True,
             max_length=256,
             add_special_tokens=True,
-            )
+        )
         
         return tokenized_sentences
 
-    def label_to_num(self,label):
-        num_label = []
+    def label_to_num(self, label: pd.Series):
         with open('./utils/dict_label_to_num.pkl', 'rb') as f:
           dict_label_to_num = pickle.load(f)
-        for v in label:
-          num_label.append(dict_label_to_num.get(v,0))
+        num_label = label.map(lambda x: dict_label_to_num.get(x, 0)).values.tolist()
         
         return num_label
 
@@ -92,7 +90,7 @@ class Dataloader(pl.LightningDataModule):
         dataset = self.load_data(data)
         inputs = self.tokenizing(dataset)
 
-        targets = self.label_to_num(dataset['label'].values)
+        targets = self.label_to_num(dataset['label'])
 
         return inputs, targets
 

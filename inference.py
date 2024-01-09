@@ -25,7 +25,7 @@ def inference(model, tokenized_sent, device, batch_size=16):
   output_prob = []
   for i, data in enumerate(tqdm(dataloader)):
 
-    with torch.no_grad():
+    with torch.inference_mode():
       outputs = model(
           input_ids=data['input_ids'].to(device),
           attention_mask=data['attention_mask'].to(device),
