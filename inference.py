@@ -57,7 +57,7 @@ def num_to_label(label):
   return origin_label
 
 def main(config: Dict):
-    set_seed()
+    set_seed(config)
     """
         주어진 dataset csv 파일과 같은 형태일 경우 inference 가능한 코드입니다.
     """
@@ -85,14 +85,14 @@ def main(config: Dict):
     # 아래 directory와 columns의 형태는 지켜주시기 바랍니다.
     output = pd.DataFrame({'id':pd.Series(range(len(pred_answer))),'pred_label':pred_answer,'probs':output_prob,})
 
-    output.to_csv('./prediction/submission.csv', index=False) # 최종적으로 완성된 예측한 라벨 csv 파일 형태로 저장.
+    output.to_csv('./prediction/'+'_'.join(config['arch']['model_name'].split('/') + config['arch']['model_detail'].split())+'_submission.csv', index=False) # 최종적으로 완성된 예측한 라벨 csv 파일 형태로 저장.
     #### 필수!! ##############################################
     print('---- Finish! ----')
 
 
 if __name__ == '__main__':
 
-    selected_config = 'base_config.json'
+    selected_config = 'roberta-base.json'
 
     with open(f'./configs/{selected_config}', 'r') as f:
         config = json.load(f)

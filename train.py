@@ -27,7 +27,7 @@ from models import base_model
 
 MODEL = base_model
 
-def set_seed():
+def set_seed(config: Dict):
     seed = config['seed']
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
@@ -39,7 +39,7 @@ def set_seed():
 
 def main(config: Dict):
     #seed 고정
-    set_seed()
+    set_seed(config)
 
     # 하이퍼 파라미터 등 각종 설정값을 입력받습니다
     # 터미널 실행 예시 : python3 run.py --batch_size=64 ...
@@ -100,7 +100,7 @@ def main(config: Dict):
 
 if __name__ == '__main__':
 
-    selected_config = 'base_config.json'
+    selected_config = 'roberta-base.json'
 
     with open(f'./configs/{selected_config}', 'r') as f:
         config = json.load(f)
