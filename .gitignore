@@ -3,6 +3,7 @@
 
 ### Manual ###
 dataset/*
+wandb/*
 
 
 ### JupyterNotebooks ###
