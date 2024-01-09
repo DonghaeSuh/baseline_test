@@ -41,9 +41,26 @@ def main(config: Dict):
     #seed 고정
     set_seed(config)
 
-    # 하이퍼 파라미터 등 각종 설정값을 입력받습니다
-    # 터미널 실행 예시 : python3 run.py --batch_size=64 ...
-    # 실행 시 '--batch_size=64' 같은 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
+    """
+    하이퍼 파라미터 등 각종 설정값을 입력받고 학습을 진행한 후 모델을 저장합니다.
+    
+    Args:
+        model_name(str): Huggingface pretrained model name
+        model_detail(str): checkpoint name에 사용될 모델 특이사항
+
+        batch_size(int): 배치 사이즈
+        max_epoch(int): 학습 최대 epoch (earlystopping에 의해 중단될 수 있음)
+        shuffle(bool): train data에 shuffle을 적용할 지 여부
+        learning_rate(float): 학습률
+
+        train_path(str): train data 경로
+        dev_path(str): dev data 경로
+        test_path(str): dev data 경로
+        predict_path(str): 실제 inference에 사용할 data 경로
+
+    터미널 실행 예시 : python3 train.py --model_name=klue/bert-base
+
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', default=config['arch']['model_name'], type=str)
     parser.add_argument('--model_detail', default=config['arch']['model_detail'], type=str)

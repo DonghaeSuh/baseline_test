@@ -78,6 +78,7 @@ class Dataloader(pl.LightningDataModule):
         return tokenized_sentences
 
     def label_to_num(self, label: pd.Series):
+        """ 문자 label을 숫자로 변환합니다. """
         with open('./utils/dict_label_to_num.pkl', 'rb') as f:
           dict_label_to_num = pickle.load(f)
         num_label = label.map(lambda x: dict_label_to_num.get(x, 0)).values.tolist()
@@ -85,8 +86,7 @@ class Dataloader(pl.LightningDataModule):
         return num_label
 
     def preprocessing(self, data):
-
-        # 텍스트 데이터를 전처리합니다.
+        """ 텍스트 데이터를 전처리합니다. """
         dataset = self.load_data(data)
         inputs = self.tokenizing(dataset)
 
@@ -95,22 +95,18 @@ class Dataloader(pl.LightningDataModule):
         return inputs, targets
 
     def setup(self, stage='fit'):
+        """ train, validation, inference를 진행합니다. """
         if stage == 'fit':
-            # 학습 데이터와 검증 데이터셋을 호출합니다
             train_data = pd.read_csv(self.train_path)
             val_data = pd.read_csv(self.dev_path)
 
-            # 학습데이터 준비
             train_inputs, train_targets = self.preprocessing(train_data)
 
-            # 검증데이터 준비
             val_inputs, val_targets = self.preprocessing(val_data)
 
-            # train 데이터만 shuffle을 적용해줍니다, 필요하다면 val, test 데이터에도 shuffle을 적용할 수 있습니다
             self.train_dataset = RE_Dataset(train_inputs, train_targets)
             self.val_dataset = RE_Dataset(val_inputs, val_targets)
         else:
-            # 평가데이터 준비
             test_data = pd.read_csv(self.dev_path)
             test_inputs, test_targets = self.preprocessing(test_data)
             self.test_dataset = RE_Dataset(test_inputs, test_targets)
