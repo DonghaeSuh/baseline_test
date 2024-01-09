@@ -27,9 +27,7 @@ from models import base_model
 
 MODEL = base_model
 
-
-def main(config: Dict):
-    #seed 고정
+def set_seed():
     seed = config['seed']
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
@@ -38,6 +36,10 @@ def main(config: Dict):
     torch.backends.cudnn.benchmark = False
     np.random.seed(seed)
     random.seed(seed)
+
+def main(config: Dict):
+    #seed 고정
+    set_seed()
 
     # 하이퍼 파라미터 등 각종 설정값을 입력받습니다
     # 터미널 실행 예시 : python3 run.py --batch_size=64 ...
