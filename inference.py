@@ -13,6 +13,7 @@ import numpy as np
 import argparse
 from tqdm import tqdm
 
+from train import set_seed
 
 def inference(model, tokenized_sent, device, batch_size=16):
   """
@@ -56,16 +57,7 @@ def num_to_label(label):
   return origin_label
 
 def main(config: Dict):
-  
-    seed = config['seed']
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)  # if use multi-GPU
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    np.random.seed(seed)
-    random.seed(seed)
-
+    set_seed()
     """
         주어진 dataset csv 파일과 같은 형태일 경우 inference 가능한 코드입니다.
     """
